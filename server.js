@@ -66,6 +66,32 @@ app.get('/user/:id', async (req, res, next) => {
   }
 });
 
+app.delete('/delete/:id', async (req, res, next) => {
+  const id = req.params.id;
+  const collection = client.db(dbName).collection(collectionName);
+  try {
+    const user = await collection.findOne({ id: id });
+    if (user) {
+      await collection.deleteOne({ id: id });
+      res.status(200).json({
+        success: true,
+        message: "User deleted"
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+});
+
 app.post('/add', async (req, res, next) => {
   const user = req.body;
   
